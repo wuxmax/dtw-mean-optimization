@@ -17,7 +17,7 @@ def set_weights(T):
             weights[i] = 1/4 * (i + 1)
     return weights
 
-def acceleGrad(iterations=10, x_0, D, weights=None, G):
+def acceleGrad(iterations=10, x_0, D, weights=None, G=2):
 
     if weights == None:
         weights = set_weights(iterations)
