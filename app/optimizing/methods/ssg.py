@@ -8,31 +8,40 @@
 
 import numpy as np
 from optimizing.interface import get_subgradient
+from optimizing.dtw_mean import frechet
 
 
-def run(X, z, N, batch_size, perm, epoch_idx, progress_bar):
+def run(X, z, f, batch_size, n_epochs, progress_bar):
     # learning rate schedule
+    N = X.shape[0]
     lr_min = 0.005
     eta = np.linspace(0.1, lr_min, N)
 
-    for i in range(0, N, batch_size):
+    for k in range(n_epochs):
+        # shuffle data indices for new epoch
+        perm = np.random.permutation(N)
 
-        # get_subgradient(X, z, data_idx, batch_size, perm)
-        subgradient = get_subgradient(X, z, i, batch_size, perm)
+        for i in range(0, N, batch_size):
 
-        # pick learning rate 
-        if epoch_idx == 0 and i <= eta.shape[0]:
-            lr = eta[i]
-        else:
-            lr = lr_min
+            # get_subgradient(X, z, data_idx, batch_size, perm)
+            subgradient = get_subgradient(X, z, i, batch_size, perm)
 
-        # update rule
-        z = z - lr * subgradient
+            # pick learning rate 
+            if k == 0 and i <= eta.shape[0]:
+                lr = eta[i]
+            else:
+                lr = lr_min
 
-        # only for updating the terminal progess bar
-        progress_bar.update(batch_size)
+            # update rule
+            z = z - lr * subgradient
 
-    return z
+            # only for updating the terminal progess bar
+            progress_bar.update(batch_size)
+        
+        # f[0] is initial value, therefore +1 indexed
+        f[k + 1] = frechet(z, X)
+
+    return z, f
 
 
 # class SSG:

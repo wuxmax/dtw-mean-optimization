@@ -14,7 +14,7 @@ DATA_BASE_DIR = str(Path.home()) + "/Documents/datasets/UCRArchive_2018/"
 DATASETS = ["Coffee"]
 OPTIMIZERS = {
     "ssg-1": {'method': "ssg", 'n_epochs': 1, 'batch_size': 1},
-    # "ssg-2": {'func': "ssg", 'n_epochs': 2}
+    "adam-1": {'method': "adam", 'n_epochs': 1, 'batch_size': 1}
 }
 NUM_ITERATIONS = 1
 RESULT_FORMAT = ["dataset", "optimizer", "iteration", "variation", "runtime"]

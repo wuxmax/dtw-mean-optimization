@@ -6,12 +6,13 @@
 # Original Author: David Schultz, DAI-Lab, TU Berlin, Germany, 2017
 ####################################################################
 
+import importlib
+import logging
 import time
 import numpy as np
 from tqdm import tqdm
 from .dtw_mean import *
-import importlib
-import logging
+
 logger = logging.getLogger(__name__)
 
 def optimize_timed(*args, **kwargs):
@@ -69,23 +70,18 @@ def optimize(X, method, n_epochs=None, batch_size=1, init_sequence=None, return_
     # optimization
     with tqdm(total=n_epochs * N) as pbar:
         for k in range(n_epochs):
-            # shuffle data indices for new epoch
-            perm = np.random.permutation(N)
-
+            
             # here the actual optimizing method is called
-            # run(X, z, N, batch_size, perm, epoch_idx, pbar)
-            optimizing_method.run(X, z, N, batch_size, perm, k, progress_bar=pbar)
+            # run(X, z, f, batch_size, n_epochs, progress_bar)
+            z, f = optimizing_method.run(X, z, f, batch_size, n_epochs, progress_bar=pbar)
 
-            # f[0] is initial value, therefore +1 indexed    
-            f[k + 1] = frechet(z, X)
-
-    f = f[0:n_epochs + 1]
+    # f = f[0:n_epochs + 1]
     
     if return_z:
-        return f[0], z
+        return f[-1], z
 
     else:
-        return f
+        return f[-1]
 
 
 def get_subgradient(X, z, data_idx, batch_size, perm):
