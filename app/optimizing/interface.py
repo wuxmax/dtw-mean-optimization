@@ -68,31 +68,16 @@ def optimize(X, method, n_epochs=None, batch_size=1, init_sequence=None, return_
 
     # optimization
     with tqdm(total=n_epochs * N) as pbar:
-        for k in range(1, n_epochs + 1):
+        for k in range(n_epochs):
+            # shuffle data indices for new epoch
             perm = np.random.permutation(N)
 
-            for i in range(1, N + 1, batch_size):
-                subgradients = np.zeros((batch_size,) + z.shape)
+            # here the actual optimizing method is called
+            # run(X, z, N, batch_size, perm, epoch_idx, pbar)
+            optimizing_method.run(X, z, N, batch_size, perm, k, progress_bar=pbar)
 
-                # TODO: Maybe possibility for optimization for batch_size > 1
-                for j in range(batch_size):
-                    x = X[perm[i + j - 1]]
-                    _, p = dtw(z, x, path=True)
-
-                    W, V = get_warp_val_mat(p)
-                    
-                    subgradients[j] = 2 * (V * z - W.dot(x))
-                
-                subgradient = np.mean(subgradients)
-
-                update_idx = (k - 1) * N + i - 1
-
-                # update rule: update(z, subgradient, update_idx, N)
-                optimizing_method.update(z, subgradient, update_idx, N)
-
-                f[k] = frechet(z, X)
-
-                pbar.update(batch_size)
+            # f[0] is initial value, therefore +1 indexed    
+            f[k + 1] = frechet(z, X)
 
     f = f[0:n_epochs + 1]
     
@@ -100,4 +85,23 @@ def optimize(X, method, n_epochs=None, batch_size=1, init_sequence=None, return_
         return f[0], z
 
     else:
-        return f, z
+        return f
+
+
+def get_subgradient(X, z, data_idx, batch_size, perm):
+    subgradients = np.zeros((batch_size,) + z.shape)
+
+    for j in range(batch_size):    
+        x = X[perm[data_idx + j]] 
+
+        _, p = dtw(z, x, path=True)
+        W, V = get_warp_val_mat(p)                
+        subgradients[j] = 2 * (V * z - W.dot(x))
+        subgradient = 2 * (V * z - W.dot(x))
+
+    subgradient = np.mean(subgradients, axis=0)
+
+    # logger.info(f"Shape of z: {z.shape} | Shape of subgradient: {subgradient.shape} | Shape of subgradientS: {subgradients.shape}")
+    # logger.info(f"Subgradient values:\n{subgradient}")
+    
+    return subgradient

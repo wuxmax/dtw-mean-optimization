@@ -7,17 +7,32 @@
 ####################################################################
 
 import numpy as np
+from optimizing.interface import get_subgradient
 
 
-def update(z, subgradient, update_idx, N):
-    eta = np.linspace(0.1, 0.005, N)
+def run(X, z, N, batch_size, perm, epoch_idx, progress_bar):
+    # learning rate schedule
+    lr_min = 0.005
+    eta = np.linspace(0.1, lr_min, N)
 
-    if update_idx <= eta.shape[0]:
-        lr = eta[update_idx]
-    else:
-        lr = eta[-1]
+    for i in range(0, N, batch_size):
 
-    return z - lr * subgradient
+        # get_subgradient(X, z, data_idx, batch_size, perm)
+        subgradient = get_subgradient(X, z, i, batch_size, perm)
+
+        # pick learning rate 
+        if epoch_idx == 0 and i <= eta.shape[0]:
+            lr = eta[i]
+        else:
+            lr = lr_min
+
+        # update rule
+        z = z - lr * subgradient
+
+        # only for updating the terminal progess bar
+        progress_bar.update(batch_size)
+
+    return z
 
 
 # class SSG:

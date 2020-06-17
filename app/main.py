@@ -8,9 +8,10 @@ logger = logging.getLogger("dtw_mean_opt_main")
 
 ### CONFIG ###
 DATA_BASE_DIR = "/Users/Max/Documents/datasets/UCRArchive_2018/"
+RESULTS_DIR = "../results"
 DATASETS = ["Coffee"]
 OPTIMIZERS = {
-    "ssg-1": {'method': "ssg", 'n_epochs': 1},
+    "ssg-1": {'method': "ssg", 'n_epochs': 1, 'batch_size': 1},
     # "ssg-2": {'func': "ssg", 'n_epochs': 2}
 }
 NUM_ITERATIONS = 1
@@ -42,7 +43,7 @@ def run_experiment():
                 result = (dataset, opt_name, iteration_id, variation, runtime)
 
                 result_df = create_result_df(result, RESULT_FORMAT)
-                results_file = save_result(result_df)
+                results_file = save_result(result_df, RESULTS_DIR)
 
                 logger.info(f"Saved latest results to [ {results_file} ]")
 

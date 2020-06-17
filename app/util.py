@@ -21,9 +21,9 @@ def df_to_np(df):
     return np.reshape(np_array, (np_array.shape[0], np_array.shape[1], 1))
 
 
-def save_result(result_df):
+def save_result(result_df, RESULTS_DIR):
     this_dir = os.path.dirname(os.path.realpath(__file__))
-    results_dir = os.path.join(this_dir, "results")
+    results_dir = os.path.join(this_dir, RESULTS_DIR)
     latest_results_file = get_latest_results_file(results_dir)
     
     # if prior results already exists, merge data in one dataframe
