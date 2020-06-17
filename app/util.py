@@ -3,7 +3,6 @@ import glob
 from datetime import datetime
 import numpy as np
 import pandas as pd
-from dtw_mean import ssg
 
 def load_dataset(data_base_dir, dataset):
     dataset_dir = os.path.join(data_base_dir, dataset)
@@ -46,7 +45,6 @@ def save_result(result_df):
 def get_latest_results_file(result_dir):    
     list_of_files = glob.glob(result_dir + '/*.csv') 
     latest_file = None
-
     if list_of_files:
         latest_file = max(list_of_files, key=os.path.getctime)
     return latest_file
