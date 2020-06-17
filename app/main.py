@@ -2,6 +2,7 @@ import time
 import logging
 from util import *
 from optimizing import interface as opti
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, format=' %(name)s :: %(levelname)s :: %(message)s')
 logger = logging.getLogger("dtw_mean_opt_main")
@@ -9,6 +10,7 @@ logger = logging.getLogger("dtw_mean_opt_main")
 ### CONFIG ###
 DATA_BASE_DIR = "/Users/Max/Documents/datasets/UCRArchive_2018/"
 RESULTS_DIR = "../results"
+DATA_BASE_DIR = str(Path.home()) + "/Documents/datasets/UCRArchive_2018/"
 DATASETS = ["Coffee"]
 OPTIMIZERS = {
     "ssg-1": {'method': "ssg", 'n_epochs': 1, 'batch_size': 1},
@@ -28,7 +30,7 @@ def run_experiment():
         for opt_name, opt_params in OPTIMIZERS.items():
 
             logger.info(f"Using optimizer [ {opt_name} ]")
-            
+
             for iteration_idx in range(NUM_ITERATIONS):
 
                 logger.info(f"Running iteration [ {iteration_idx+1} / {NUM_ITERATIONS} ]")
