@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 /venv
-=======
 .idea
 .vscode
 .DS_Store
@@ -9,4 +7,3 @@
 *.pyo
 
 results
->>>>>>> 7eaad7fecb7981b819e94b0b606f108c4559bab1
