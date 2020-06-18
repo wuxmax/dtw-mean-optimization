@@ -16,4 +16,3 @@ COPY ./app /app
 # CMD ["scripts/run_experiment.sh"]
 
 ENTRYPOINT [ "python3", "main.py" ]
-# CMD [ "main.py" ]
