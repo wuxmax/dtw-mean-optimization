@@ -13,6 +13,8 @@ import numpy as np
 from tqdm import tqdm
 from .dtw_mean import *
 
+from numba import jit
+
 logger = logging.getLogger(__name__)
 
 def optimize_timed(*args, **kwargs):
@@ -83,7 +85,7 @@ def optimize(X, method, n_epochs=None, batch_size=1, init_sequence=None, return_
     else:
         return f[-1]
 
-
+@jit(nopython=True, parallel=True)
 def get_subgradient(X, z, data_idx, batch_size, perm):
     subgradients = np.zeros((batch_size,) + z.shape)
 

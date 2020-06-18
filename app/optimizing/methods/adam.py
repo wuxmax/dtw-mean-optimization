@@ -2,6 +2,8 @@ import numpy as np
 from optimizing.interface import get_subgradient
 from optimizing.dtw_mean import frechet
 
+from numba import jit
+
 """ 
 Require: α: Stepsize
 Require: β1, β2 ∈ [0, 1): Exponential decay rates for the moment estimates
@@ -23,6 +25,7 @@ return θt (Resulting parameters)
 """
 
 # run(X, z, f, batch_size, n_epochs, progress_bar)
+@jit(nopython=True, parallel=True)
 def run(X, z, f, batch_size, n_epochs, progress_bar):
     N = X.shape[0]
     d = z.shape

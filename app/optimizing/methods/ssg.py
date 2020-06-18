@@ -10,7 +10,9 @@ import numpy as np
 from optimizing.interface import get_subgradient
 from optimizing.dtw_mean import frechet
 
+from numba import jit
 
+@jit(nopython=True, parallel=True)
 def run(X, z, f, batch_size, n_epochs, progress_bar):
     # learning rate schedule
     N = X.shape[0]
