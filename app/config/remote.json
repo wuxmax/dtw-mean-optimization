@@ -1,11 +1,14 @@
 {
     "RESULTS_DIR" : "/results",
     "DATA_BASE_DIR" : "/datasets/UCRArchive_2018",
-    "DATASETS" : ["Coffee"],
+    "DATASETS" : ["50words", "Adiac", "Beef", "CBF", "ChlorineConcentration", "Coffee", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "FaceFour", "FISH", "Gun_Point", "Lighting2", "Lighting7", "OliveOil", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "synthetic_control", "Trace", "Two_Patterns", "wafer", "yoga"],
     "OPTIMIZERS" : {
         "ssg-1": {"method": "ssg", "n_epochs": 1, "batch_size": 1},
-        "adam-1": {"method": "adam", "n_epochs": 1, "batch_size": 1}
+        "adam-1": {"method": "adam", "n_epochs": 1, "batch_size": 1},
+        "ssg-50": {"method": "ssg", "n_epochs": 50, "batch_size": 1},
+        "adam-50": {"method": "adam", "n_epochs": 50, "batch_size": 1}
     },
-    "NUM_ITERATIONS" : 1,
+    "NUM_ITERATIONS" : 30,
     "RESULT_FORMAT" : ["dataset", "optimizer", "iteration", "variation", "runtime"]
 }
+
