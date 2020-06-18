@@ -1,7 +1,7 @@
 {
     "RESULTS_DIR" : "/results",
     "DATA_BASE_DIR" : "/datasets/UCRArchive_2018",
-    "DATASETS" : ["50words", "Adiac", "Beef", "CBF", "ChlorineConcentration", "Coffee", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "FaceFour", "FISH", "Gun_Point", "Lighting2", "Lighting7", "OliveOil", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "synthetic_control", "Trace", "Two_Patterns", "wafer", "yoga"],
+    "DATASETS" : ["FiftyWords", "Adiac", "Beef", "CBF", "ChlorineConcentration", "Coffee", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "FaceFour", "FISH", "Gun_Point", "Lighting2", "Lighting7", "OliveOil", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "SyntheticControl", "Trace", "TwoPatterns", "Wafer", "Yoga"],
     "OPTIMIZERS" : {
         "ssg-1": {"method": "ssg", "n_epochs": 1, "batch_size": 1},
         "adam-1": {"method": "adam", "n_epochs": 1, "batch_size": 1},
