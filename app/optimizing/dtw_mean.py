@@ -12,7 +12,7 @@ from scipy.sparse import coo_matrix
 
 from numba import jit
 
-@jit
+@jit(forceobj=True)
 def dtw(x, y, path=False):
     # Local Variables: C, d, C_diag, k, C_d, m, N, p, C_r, y, x, n, D
     # Function calls: pdist2, min, cumsum, M, nargout, sqrt, zeros, dtw, size
@@ -83,7 +83,7 @@ def dtw(x, y, path=False):
     
     return d
 
-@jit
+@jit(forceobj=True)
 def frechet(x, X):
     # Local Variables: dist, f, i, N, X, x
     # Function calls: Frechet, length, dtw
@@ -96,7 +96,7 @@ def frechet(x, X):
     f = f / N
     return f
 
-@jit
+@jit(forceobj=True)
 def medoid_sequence(X):
     # Local Variables: f, i, f_min, N, i_min, X, x
     # Function calls: Frechet, length, medoidSequence, inf
@@ -115,7 +115,7 @@ def medoid_sequence(X):
     x = X[i_min]
     return x
 
-@jit
+@jit(forceobj=True)
 def get_warp_val_mat(p):
     # Local Variables: m, L, n, p, W, V
     # Function calls: length, ones, sparse, getWarpingAndValenceMatrix, sum

@@ -25,7 +25,7 @@ return θt (Resulting parameters)
 """
 
 # run(X, z, f, batch_size, n_epochs, progress_bar)
-@jit
+@jit(forceobj=True)
 def run(X, z, f, batch_size, n_epochs, progress_bar):
     N = X.shape[0]
     d = z.shape

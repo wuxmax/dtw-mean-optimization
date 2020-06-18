@@ -85,7 +85,7 @@ def optimize(X, method, n_epochs=None, batch_size=1, init_sequence=None, return_
     else:
         return f[-1]
 
-@jit
+@jit(forceobj=True)
 def get_subgradient(X, z, data_idx, batch_size, perm):
     subgradients = np.zeros((batch_size,) + z.shape)
 
