@@ -9,5 +9,4 @@ RUN conda install -y --file requirements.txt
 
 COPY ./app /app
 
-ENTRYPOINT [ "python3" ]
-CMD ["main.py"]
+ENTRYPOINT [ "python3", "main.py" ]
