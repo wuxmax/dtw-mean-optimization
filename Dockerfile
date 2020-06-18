@@ -15,5 +15,5 @@ COPY ./app /app
 # ENTRYPOINT [ "bash" ]
 # CMD ["scripts/run_experiment.sh"]
 
-ENTRYPOINT [ "python3" ]
-CMD [ "main.py" ]
+ENTRYPOINT [ "python3", "main.py" ]
+# CMD [ "main.py" ]
