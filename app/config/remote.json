@@ -1,0 +1,11 @@
+{
+    "RESULTS_DIR" : "/results",
+    "DATA_BASE_DIR" : "/datasets/UCRArchive_2018",
+    "DATASETS" : ["Coffee"],
+    "OPTIMIZERS" : {
+        "ssg-1": {"method": "ssg", "n_epochs": 1, "batch_size": 1},
+        "adam-1": {"method": "adam", "n_epochs": 1, "batch_size": 1}
+    },
+    "NUM_ITERATIONS" : 1,
+    "RESULT_FORMAT" : ["dataset", "optimizer", "iteration", "variation", "runtime"]
+}

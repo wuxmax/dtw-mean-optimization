@@ -1,0 +1,11 @@
+{
+    "RESULTS_DIR" : "/Users/Max/Dropbox/Uni/Master/SSPJ/ssp-dtw-mean-optimization/results",
+    "DATA_BASE_DIR" : "/Users/Max/Documents/datasets/UCRArchive_2018",
+    "DATASETS" : ["Coffee"],
+    "OPTIMIZERS" : {
+        "ssg-1": {"method": "ssg", "n_epochs": 1, "batch_size": 1},
+        "adam-1": {"method": "adam", "n_epochs": 1, "batch_size": 1}
+    },
+    "NUM_ITERATIONS" : 1,
+    "RESULT_FORMAT" : ["dataset", "optimizer", "iteration", "variation", "runtime"]
+}
