@@ -1,6 +1,6 @@
 {
-    "RESULTS_DIR" : "/root/results",
-    "DATA_BASE_DIR" : "/root/datasets/UCRArchive_2018",
+    "RESULTS_DIR" : "/root/ssp-dtw-mean-optimization/results",
+    "DATA_BASE_DIR" : "/root/ssp-dtw-mean-optimization/datasets/UCRArchive_2018",
     "DATASETS" : ["FiftyWords", "Adiac", "Beef", "CBF", "ChlorineConcentration", "Coffee", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "FaceFour", "FISH", "Gun_Point", "Lighting2", "Lighting7", "OliveOil", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "SyntheticControl", "Trace", "TwoPatterns", "Wafer", "Yoga"],
     "OPTIMIZERS" : {
         "ssg-1": {"method": "ssg", "n_epochs": 1, "batch_size": 1},
