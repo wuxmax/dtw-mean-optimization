@@ -12,7 +12,6 @@ from optimizing.dtw_mean import frechet
 
 from numba import jit
 
-@jit(forceobj=True)
 def run(X, z, f, batch_size, n_epochs, progress_bar):
     # learning rate schedule
     N = X.shape[0]

@@ -2,4 +2,3 @@ tqdm
 scipy
 numpy
 pandas
-numba
