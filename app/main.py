@@ -41,7 +41,7 @@ def load_experiment_config():
         with open(config_file) as f:
             config_dict = json.load(f)
     except Exception as e:
-        logger.exception("Could not load config file" + str(e))
+        logger.exception("Could not load config file: " + str(e))
 
     logger.info(f"Loaded configuration [ {config_filename} ]")
 
