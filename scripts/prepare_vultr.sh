@@ -1,5 +1,7 @@
 apt-get update
 apt install -y python3-pip 
+apt-get install python3-venv
+
 apt install -y unzip
 apt install -y source
 
