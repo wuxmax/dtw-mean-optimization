@@ -1,6 +1,6 @@
-apt get update
+apt-get update
 apt install -y python3-pip 
-apt install -y python3-pipunzip
+apt install -y unzip
 
 mkdir results
 mkdir datasets
