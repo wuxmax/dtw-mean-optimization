@@ -1,0 +1,9 @@
+{
+    "DATASETS" : ["FiftyWords", "Adiac", "Beef", "CBF", "ChlorineConcentration"],
+    "OPTIMIZERS" : {
+        "adam-1": {"method": "adam", "n_epochs": 1, "batch_size": 1},
+        "adam-50": {"method": "adam", "n_epochs": 50, "batch_size": 1}
+    },
+    "NUM_ITERATIONS" : 30
+}
+
