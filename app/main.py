@@ -12,20 +12,20 @@ from optimizing import interface as opti
 logging.basicConfig(level=logging.INFO, format=' %(name)s :: %(levelname)s :: %(message)s')
 logger = logging.getLogger("dtw_mean_opt_main")
 
-### GENERAL DEFAULT CONFIG ###
-RESULTS_DIR = "./results"
-# DATA_BASE_DIR = "/Users/Max/Documents/datasets/UCRArchive_2018/"
-DATA_BASE_DIR = "./datasets/UCRArchive_2018/"
-RESULT_FORMAT = ["dataset", "optimizer", "iteration", "variation", "runtime"]
-
+### DEFAULT GENERAL  CONFIG ###
+general_config = {
+    "RESULTS_DIR" : "./results",
+    "DATA_BASE_DIR" : "./datasets/UCRArchive_2018/",
+    "RESULT_FORMAT" : ["dataset", "optimizer", "iteration", "variation", "runtime"]
+}
 
 def load_experiment_config():
     parser = argparse.ArgumentParser(description='Run optimizing experiment for DTW mean computation.')
     parser.add_argument('config', metavar='CONFIG', nargs='?', default="default",
         help='the configuration to use in config folder')
-    parser.add_argument('--results', metavar='PATH', dest='results_path',
+    parser.add_argument('-r','--results', metavar='PATH', dest='results_path',
                     help='path to store the results')
-    parser.add_argument('--dataset', metavar='PATH', dest='datasets_path',
+    parser.add_argument('-d', '--datasets', metavar='PATH', dest='datasets_path',
                     help='path of the datasets folders')
 
     args = parser.parse_args()
@@ -44,13 +44,13 @@ def load_experiment_config():
         logger.exception("Could not load config file" + str(e))
 
     logger.info(f"Loaded configuration [ {config_filename} ]")
-    
-    Config = namedtuple('Config', config_dict.keys()) 
-    config = Config(**config_dict)
 
     # change general config if given
-    if args.results_path: RESULTS_DIR = args.results_path 
-    if args.datasets_path: DATA_BASE_DIR = args.datasets_path 
+    if args.results_path: general_config['RESULTS_DIR'] = args.results_path         
+    if args.datasets_path: general_config['DATA_BASE_DIR'] = args.datasets_path 
+
+    Config = namedtuple('Config', list(config_dict.keys()) + list(general_config.keys())) 
+    config = Config(**config_dict, **general_config)
 
     return config
 
@@ -62,7 +62,7 @@ def run_experiment(config):
 
         logger.info(f"Starting experiment for dataset [ {dataset} ]")
 
-        data = load_dataset(DATA_BASE_DIR, dataset)
+        data = load_dataset(c.DATA_BASE_DIR, dataset)
 
         for opt_name, opt_params in c.OPTIMIZERS.items():
 
@@ -81,8 +81,8 @@ def run_experiment(config):
                 iteration_id = str(iteration_idx) + "_" + str(hash(time.time()))
                 result = (dataset, opt_name, iteration_id, variation, runtime)
 
-                result_df = create_result_df(result, RESULT_FORMAT)
-                results_file = save_result(result_df, RESULTS_DIR)
+                result_df = create_result_df(result, c.RESULT_FORMAT)
+                results_file = save_result(result_df, c.RESULTS_DIR)
 
                 logger.info(f"Saved latest results to [ {results_file} ]")
 
