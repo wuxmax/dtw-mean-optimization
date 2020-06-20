@@ -13,9 +13,9 @@ logging.basicConfig(level=logging.INFO, format=' %(name)s :: %(levelname)s :: %(
 logger = logging.getLogger("dtw_mean_opt_main")
 
 ### GENERAL DEFAULT CONFIG ###
-RESULTS_DIR = "../results"
+RESULTS_DIR = "./results"
 # DATA_BASE_DIR = "/Users/Max/Documents/datasets/UCRArchive_2018/"
-DATA_BASE_DIR = "../datasets/UCRArchive_2018/"
+DATA_BASE_DIR = "./datasets/UCRArchive_2018/"
 RESULT_FORMAT = ["dataset", "optimizer", "iteration", "variation", "runtime"]
 
 
