@@ -23,8 +23,6 @@ def load_experiment_config():
     parser = argparse.ArgumentParser(description='Run optimizing experiment for DTW mean computation.')
     parser.add_argument('config', metavar='CONFIG', nargs='?', default="default",
         help='the configuration to use in config folder')
-    parser.add_argument('config', metavar='CONFIG', nargs='?', default="default",
-        help='the configuration to use in config folder')
     parser.add_argument('--results', metavar='PATH', dest='results_path',
                     help='path to store the results')
     parser.add_argument('--dataset', metavar='PATH', dest='datasets_path',
