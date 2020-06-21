@@ -23,21 +23,24 @@ def df_to_np(df):
 
 def save_result(result_df, results_dir):
     results_dir = os.path.abspath(results_dir)
-    latest_results_file = get_latest_results_file(results_dir)
+   
+    # latest_results_file = get_latest_results_file(results_dir)
     
-    # if prior results already exists, merge data in one dataframe
-    results_df = None
-    if latest_results_file:
-        latest_results_df = pd.read_csv(latest_results_file)
-        results_df = pd.concat([latest_results_df, result_df])
-    if results_df is None:
-        results_df = result_df
+    # # if prior results already exists, merge data in one dataframe
+    # results_df = None
+    # if latest_results_file:
+    #     latest_results_df = pd.read_csv(latest_results_file)
+    #     results_df = pd.concat([latest_results_df, result_df])
+    # if results_df is None:
+    #     results_df = result_df
     
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    results_filename = "results_" + timestamp + ".csv"
+    # timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    # # results_filename = "results_" + timestamp + ".csv"
+  
+    results_filename = "results.csv"
     results_file = os.path.join(results_dir, results_filename)
-
-    results_df.to_csv(results_file, index=False)
+    result_df.to_csv(results_file, index=False, mode='a+')
+    # results_df.to_csv(results_file, index=False, mode='a+')
     return results_file
 
 

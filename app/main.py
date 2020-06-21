@@ -55,8 +55,7 @@ def load_experiment_config():
     return config
 
 
-def run_experiment(config):
-    c = config
+def run_experiment(c):
 
     for dataset in c.DATASETS:
 
