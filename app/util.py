@@ -1,5 +1,6 @@
 import os
 import glob
+import csv
 from datetime import datetime
 import numpy as np
 import pandas as pd
@@ -21,36 +22,30 @@ def df_to_np(df):
     return np.reshape(np_array, (np_array.shape[0], np_array.shape[1], 1))
 
 
-def save_result(result_df, results_dir):
+def save_result(result, results_dir, result_format):
     results_dir = os.path.abspath(results_dir)
-   
-    # latest_results_file = get_latest_results_file(results_dir)
-    
-    # # if prior results already exists, merge data in one dataframe
-    # results_df = None
-    # if latest_results_file:
-    #     latest_results_df = pd.read_csv(latest_results_file)
-    #     results_df = pd.concat([latest_results_df, result_df])
-    # if results_df is None:
-    #     results_df = result_df
-    
-    # timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    # # results_filename = "results_" + timestamp + ".csv"
-  
     results_filename = "results.csv"
     results_file = os.path.join(results_dir, results_filename)
-    result_df.to_csv(results_file, index=False, mode='a+')
-    # results_df.to_csv(results_file, index=False, mode='a+')
+
+    file_exists = os.path.exists(results_file)
+    
+    with open(results_file,'a+') as out:
+        csv_out=csv.writer(out)
+        # write header if file does not exist
+        if not file_exists:
+            csv_out.writerow(result_format)
+        csv_out.writerow(result)
+
     return results_file
 
 
-def get_latest_results_file(result_dir):    
-    list_of_files = glob.glob(result_dir + '/*.csv') 
-    latest_file = None
-    if list_of_files:
-        latest_file = max(list_of_files, key=os.path.getctime)
-    return latest_file
+# def get_latest_results_file(result_dir):    
+#     list_of_files = glob.glob(result_dir + '/*.csv') 
+#     latest_file = None
+#     if list_of_files:
+#         latest_file = max(list_of_files, key=os.path.getctime)
+#     return latest_file
 
 
-def create_result_df(data_tuple, df_columns):
-    return pd.DataFrame.from_records([data_tuple], columns=df_columns)
+# def create_result_df(data_tuple, df_columns):
+#     return pd.DataFrame.from_records([data_tuple], columns=df_columns)

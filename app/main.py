@@ -16,7 +16,7 @@ logger = logging.getLogger("dtw_mean_opt_main")
 general_config = {
     "RESULTS_DIR" : "./results",
     "DATA_BASE_DIR" : "./datasets/UCRArchive_2018/",
-    "RESULT_FORMAT" : ["dataset", "optimizer", "iteration", "variation", "runtime"]
+    "RESULT_FORMAT" : ("dataset", "optimizer", "iteration", "variation", "runtime")
 }
 
 def load_experiment_config():
@@ -80,8 +80,7 @@ def run_experiment(c):
                 iteration_id = str(iteration_idx) + "_" + str(hash(time.time()))
                 result = (dataset, opt_name, iteration_id, variation, runtime)
 
-                result_df = create_result_df(result, c.RESULT_FORMAT)
-                results_file = save_result(result_df, c.RESULTS_DIR)
+                results_file = save_result(result, c.RESULTS_DIR, c.RESULT_FORMAT)
 
                 logger.info(f"Saved latest results to [ {results_file} ]")
 

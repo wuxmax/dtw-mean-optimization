@@ -10,11 +10,15 @@ import numpy as np
 from optimizing.interface import get_subgradient
 from optimizing.dtw_mean import frechet
 
-def run(X, z, f, batch_size, n_epochs, progress_bar):
+logger = logging.getLogger(__name__)
+
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
     # learning rate schedule
     N = X.shape[0]
     lr_min = 0.005
     eta = np.linspace(0.1, lr_min, N)
+
+    n_visited_samples = 0
 
     for k in range(n_epochs):
         # shuffle data indices for new epoch
@@ -22,6 +26,9 @@ def run(X, z, f, batch_size, n_epochs, progress_bar):
 
         for i in range(0, N, batch_size):
 
+            if not n_visited_samples < n_coverage:
+                break
+            
             # get_subgradient(X, z, data_idx, batch_size, perm)
             subgradient = get_subgradient(X, z, i, batch_size, perm)
 
@@ -36,9 +43,18 @@ def run(X, z, f, batch_size, n_epochs, progress_bar):
 
             # only for updating the terminal progess bar
             progress_bar.update(batch_size)
+
+            n_visited_samples += batch_size
         
         # f[0] is initial value, therefore +1 indexed
+        logger.info("start frechet calc")
         f[k + 1] = frechet(z, X)
+        logger.info("stop frechet calc")
+
+        # stop if converged
+        f_diff = abs((f[k + 1] -  f[k]) / f[k])
+        if f_diff < d_converged:
+            break
 
     return z, f
 
