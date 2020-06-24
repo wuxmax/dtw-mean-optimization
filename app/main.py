@@ -5,7 +5,8 @@ import time
 import logging
 import argparse
 import json
-from collections import namedtuple    
+from collections import namedtuple
+from datetime import datetime
 from util import *
 from optimizing import interface as opti
 
@@ -29,10 +30,14 @@ def load_experiment_config():
                     help='path of the datasets folders')
 
     args = parser.parse_args()
-    config_filename = args.config
-    
-    if not config_filename.endswith(".json"):
-        config_filename += ".json"
+    config_name = args.config
+
+    config_filesuffix = ".json"    
+    if config_name.endswith(config_filesuffix):
+        config_filename = config_name
+        config_name = config_name[:-len(config_filesuffix)]
+    else:
+        config_filename = config_name + config_filesuffix
 
     this_dir = os.path.dirname(os.path.realpath(__file__))
     config_file = os.path.join(this_dir, 'config', config_filename)
@@ -43,6 +48,7 @@ def load_experiment_config():
     except Exception as e:
         logger.exception("Could not load config file: " + str(e))
 
+    config_dict['NAME'] = config_name
     logger.info(f"Loaded configuration [ {config_filename} ]")
 
     # change general config if given
@@ -56,6 +62,8 @@ def load_experiment_config():
 
 
 def run_experiment(c):
+
+    timestamp = datetime.now()
 
     for dataset in c.DATASETS:
 
@@ -80,7 +88,7 @@ def run_experiment(c):
                 iteration_id = str(iteration_idx) + "_" + str(hash(time.time()))
                 result = (dataset, opt_name, iteration_id, variation, runtime)
 
-                results_file = save_result(result, c.RESULTS_DIR, c.RESULT_FORMAT)
+                results_file = save_result(result, c.RESULTS_DIR, c.RESULT_FORMAT, c.NAME, timestamp)
 
                 logger.info(f"Saved latest results to [ {results_file} ]")
 

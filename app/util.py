@@ -1,7 +1,6 @@
 import os
 import glob
 import csv
-from datetime import datetime
 import numpy as np
 import pandas as pd
 
@@ -22,9 +21,9 @@ def df_to_np(df):
     return np.reshape(np_array, (np_array.shape[0], np_array.shape[1], 1))
 
 
-def save_result(result, results_dir, result_format):
+def save_result(result, results_dir, result_format, exp_name, exp_timestamp):
     results_dir = os.path.abspath(results_dir)
-    results_filename = "results.csv"
+    results_filename = "_".join(["results", exp_name, exp_timestamp.strftime("%d-%m-%Y_%H-%M-%S")]) + ".csv"
     results_file = os.path.join(results_dir, results_filename)
 
     file_exists = os.path.exists(results_file)

@@ -57,7 +57,7 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     f[0] = frechet(z, X)
 
     # optimization
-    with tqdm(total=n_coverage) as pbar:
+    with tqdm(total=n_coverage + (n_coverage % batch_size)) as pbar:
         
         # here the actual optimizing method is called
         # run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
@@ -69,7 +69,7 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     if np.isnan(f[last_epoch_idx]):
         last_epoch_idx = np.where(np.isnan(f))[0][0] - 1
 
-    if last_epoch_idx < n_epochs:
+    if last_epoch_idx != -1:
         logger.info(f"Stopped early because of convergence: [ {last_epoch_idx} / {n_epochs} ] epochs computed")
 
     if return_z:
