@@ -57,7 +57,8 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     f[0] = frechet(z, X)
 
     # optimization
-    with tqdm(total=n_coverage + (n_coverage % batch_size)) as pbar:
+    batch_overspill = 1 if n_coverage % batch_size > 0 else 0
+    with tqdm(total=n_coverage - n_coverage % batch_size + batch_overspill * batch_size) as pbar:
         
         # here the actual optimizing method is called
         # run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
