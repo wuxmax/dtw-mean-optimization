@@ -10,6 +10,7 @@ import numpy as np
 from optimizing.interface import get_subgradient
 from optimizing.dtw_mean import frechet
 
+import logging
 logger = logging.getLogger(__name__)
 
 def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
@@ -25,8 +26,14 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
         perm = np.random.permutation(N)
 
         for i in range(0, N, batch_size):
-
+            
+            # break if number of samples to visit is reached or exceeded
             if not n_visited_samples < n_coverage:
+                break
+
+            # break if there is not an entire batch left 
+            # (relevant for batch_size > 1)
+            if N - i < batch_size:
                 break
             
             # get_subgradient(X, z, data_idx, batch_size, perm)
@@ -47,9 +54,7 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
             n_visited_samples += batch_size
         
         # f[0] is initial value, therefore +1 indexed
-        logger.info("start frechet calc")
         f[k + 1] = frechet(z, X)
-        logger.info("stop frechet calc")
 
         # stop if converged
         f_diff = abs((f[k + 1] -  f[k]) / f[k])

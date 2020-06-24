@@ -41,7 +41,7 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     if n_coverage is None:
         n_coverage = 1000
     
-    n_epochs = int(np.ceil(n_coverage / N ))
+    n_epochs = int(np.ceil(n_coverage / (N - (N % batch_size))))
     
     # initialize mean z
     if init_sequence is None:

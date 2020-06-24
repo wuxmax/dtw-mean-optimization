@@ -1,6 +1,7 @@
 {
     "DATASETS" : ["Coffee"],
     "OPTIMIZERS" : {
+        "adam-1000": {"method": "adam", "n_coverage": 1000, "batch_size": 1},
         "ssg-1000": {"method": "ssg", "n_coverage": 1000, "batch_size": 1}
     },
     "NUM_ITERATIONS" : 1

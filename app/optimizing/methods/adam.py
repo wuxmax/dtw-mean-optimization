@@ -22,11 +22,11 @@ end while
 return θt (Resulting parameters)
 """
 
-# run(X, z, f, batch_size, n_epochs, progress_bar)
-def run(X, z, f, batch_size, n_epochs, progress_bar):
+# run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
     N = X.shape[0]
     d = z.shape
-    n_steps = int(np.floor(n_epochs * N / batch_size))
+    n_steps = int(np.ceil(n_coverage / batch_size))
 
     alpha = 0.001
     beta1 = 0.9
@@ -35,19 +35,27 @@ def run(X, z, f, batch_size, n_epochs, progress_bar):
 
     m = np.zeros((n_steps + 1,) + d)
     v = np.zeros((n_steps + 1,) + d)
+
+    n_visited_samples = 0
+    t = 0
     
     for k in range(n_epochs):
         # shuffle data indices for new epoch
         perm = np.random.permutation(N)
 
         for i in range(0, N, batch_size):
+                        
+            # break if number of samples to visit is reached or exceeded
+            if not n_visited_samples < n_coverage:
+                break
+            
             # break if there is not an entire batch left 
             # (relevant for batch_size > 1)
             if N - i < batch_size:
                 break
 
             # update step index (+1 indexed, because of m, v initialization)
-            t = k * N + i * batch_size + 1
+            t += 1
 
             # get_subgradient(X, z, data_idx, batch_size, perm)
             g = get_subgradient(X, z, i, batch_size, perm)
@@ -63,9 +71,16 @@ def run(X, z, f, batch_size, n_epochs, progress_bar):
 
             # only for updating the terminal progess bar
             progress_bar.update(batch_size)
+
+            n_visited_samples += batch_size
         
         # f[0] is initial value, therefore +1 indexed
         f[k + 1] = frechet(z, X)
+
+        # stop if converged
+        f_diff = abs((f[k + 1] -  f[k]) / f[k])
+        if f_diff < d_converged:
+            break
 
     return z, f
 
