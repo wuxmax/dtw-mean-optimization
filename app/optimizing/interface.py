@@ -65,6 +65,7 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
         z, f = optimizing_method.run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar=pbar)
     
     # check if there are Nan values left in f
+    last_epoch_idx = n_epochs - 1
     nan_epochs = np.where(np.isnan(f))[0]
     if len(nan_epochs) > 0:
         last_epoch_idx = nan_epochs[0] - 1
