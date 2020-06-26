@@ -14,6 +14,7 @@ def load_dataset(data_base_dir, dataset):
     
     # merge train and test data
     df =  pd.concat(dfs)
+    
     return df_to_np(df)
 
 def df_to_np(df):

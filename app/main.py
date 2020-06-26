@@ -71,7 +71,7 @@ def run_experiment(c):
 
         data = load_dataset(c.DATA_BASE_DIR, dataset)
 
-        logger.info(f"Dataset size: {len(data.index)}")
+        logger.info(f"Dataset size: {len(data.shape[0])}")
 
         for opt_name, opt_params in c.OPTIMIZERS.items():
 
