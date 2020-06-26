@@ -14,10 +14,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
-    # learning rate schedule
     N = X.shape[0]
+    
+    # learning rate schedule
+    n_steps = int(np.ceil(n_coverage / batch_size))
     lr_min = 0.005
-    eta = np.linspace(0.1, lr_min, N)
+    eta = np.linspace(0.05, lr_min, n_steps)
 
     n_visited_samples = 0
 
@@ -40,7 +42,7 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
             subgradient = get_subgradient(X, z, i, batch_size, perm)
 
             # pick learning rate 
-            if k == 0 and i <= eta.shape[0]:
+            if k == 0 and i < eta.shape[0]:
                 lr = eta[i]
             else:
                 lr = lr_min

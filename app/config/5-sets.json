@@ -1,10 +1,10 @@
 {
     "DATASETS" : ["FiftyWords", "Adiac", "Beef", "CBF", "ChlorineConcentration"],
     "OPTIMIZERS" : {
-        "adam-1000-1": {"method": "adam", "n_coverage": 1000, "batch_size": 1},
         "ssg-1000-1": {"method": "ssg", "n_coverage": 1000, "batch_size": 1},
-        "adam-1000-10": {"method": "adam", "n_coverage": 1000, "batch_size": 10},
+        "adam-1000-1": {"method": "adam", "n_coverage": 1000, "batch_size": 1},
         "ssg-1000-10": {"method": "ssg", "n_coverage": 1000, "batch_size": 10},
+        "adam-1000-10": {"method": "adam", "n_coverage": 1000, "batch_size": 10},
         "sgld-120": {"method": "sgld", "n_coverage": 120, "batch_size": 1}
     },
     "NUM_ITERATIONS" : 30

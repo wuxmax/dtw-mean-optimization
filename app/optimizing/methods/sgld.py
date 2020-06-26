@@ -85,11 +85,13 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
 
     x = np.unique(x, axis=0)
 
-    logger.info(f"now calculating {x.shape[0]} frechet functions")
+    logger.info(f"Now calculating {x.shape[0]} frechet variations")
 
     f_array = np.array([frechet(val, X) for val in x])
     best_x = np.argmin(f_array)
 
+    # TODO: why?
     result = x[best_x].flatten() if x.shape[2] == 1 else x[best_x]
 
-    return -np.sort(-f_array), result
+    # return -np.sort(-f_array), result
+    return f_array, result

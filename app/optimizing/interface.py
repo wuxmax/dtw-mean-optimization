@@ -63,15 +63,15 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
         # here the actual optimizing method is called
         # run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
         z, f = optimizing_method.run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar=pbar)
-
-    # get index of last completed epoch 
-    # (relevant for early stopping, because of convergence)
-    last_epoch_idx = -1
-    if np.isnan(f[last_epoch_idx]):
-        last_epoch_idx = np.where(np.isnan(f))[0][0] - 1
-
-    if last_epoch_idx != -1:
+    
+    # check if there are Nan values left in f
+    nan_epochs = np.where(np.isnan(f))[0]
+    if len(nan_epochs) > 0:
+        last_epoch_idx = nan_epochs[0] - 1
         logger.info(f"Stopped early because of convergence: [ {last_epoch_idx} / {n_epochs} ] epochs computed")
+
+    # epoch with minimum frechet variation is best result
+    f_min = np.min(f)
 
     if return_z:
         return f[last_epoch_idx], z

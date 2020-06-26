@@ -71,6 +71,8 @@ def run_experiment(c):
 
         data = load_dataset(c.DATA_BASE_DIR, dataset)
 
+        logger.info(f"Dataset size: {len(data.index)}")
+
         for opt_name, opt_params in c.OPTIMIZERS.items():
 
             logger.info(f"Using optimizer [ {opt_name} ]")
