@@ -38,6 +38,10 @@ def save_result(result, results_dir, result_format, exp_name, exp_timestamp):
 
     return results_file
 
+def indent_log(str, indent):
+    spacer = " :: "
+    return indent * spacer + str
+
 
 # def get_latest_results_file(result_dir):    
 #     list_of_files = glob.glob(result_dir + '/*.csv') 

@@ -65,21 +65,31 @@ def run_experiment(c):
 
     timestamp = datetime.now()
 
+    log_indent = 0
+
     for dataset in c.DATASETS:
 
-        logger.info(f"Starting experiment for dataset [ {dataset} ]")
+        logger.info(indent_log(f"Starting experiment for dataset [ {dataset} ]", log_indent))
 
         data = load_dataset(c.DATA_BASE_DIR, dataset)
 
-        logger.info(f"Dataset size: [ {data.shape[0]} ]")
+        log_indent += 1
+
+        logger.info(indent_log(f"Dataset size: [ {data.shape[0]} ]", log_indent))
 
         for opt_name, opt_params in c.OPTIMIZERS.items():
 
-            logger.info(f"Using optimizer [ {opt_name} ]")
+            logger.info(indent_log(f"Using optimizer [ {opt_name} ]", log_indent))
+
+            log_indent += 1
+
+            logger.info(indent_log(f"Min. visited samples: [ {opt_params['n_coverage']} ]", log_indent))
+
+            logger.info(indent_log(f"Batch size: [ {opt_params['batch_size']} ]", log_indent))
 
             for iteration_idx in range(c.NUM_ITERATIONS):
 
-                logger.info(f"Running iteration [ {iteration_idx+1} / {c.NUM_ITERATIONS} ]")
+                logger.info(indent_log(f"Running iteration [ {iteration_idx+1} / {c.NUM_ITERATIONS} ]", log_indent))
 
                 runtime = None
                 variation = None
@@ -92,14 +102,16 @@ def run_experiment(c):
 
                 results_file = save_result(result, c.RESULTS_DIR, c.RESULT_FORMAT, c.NAME, timestamp)
 
-                logger.info(f"Saved latest results to [ {results_file} ]")
+                logger.info(indent_log(f"Saved latest results to [ {results_file} ]", log_indent))
 
-            logger.info(f"Finished experiment on [{dataset}] using [{opt_name}] for [{c.NUM_ITERATIONS}] iterations.")
+                log_indent -= 1
+
+            logger.info(indent_log(f"Finished experiment on [{dataset}] using [{opt_name}] for [{c.NUM_ITERATIONS}] iterations", log_indent))
             
             num_iterations_total = len(c.DATASETS) * len(c.OPTIMIZERS) * c.NUM_ITERATIONS
             idx_iterations_total = (c.DATASETS.index(dataset) * len(c.OPTIMIZERS) + list(c.OPTIMIZERS.keys()).index(opt_name)) \
                 * c.NUM_ITERATIONS + iteration_idx + 1
-            logger.info(f"### Total progress: [ {idx_iterations_total} / {num_iterations_total} ] iterations ###")
+            logger.info(indent_log(f"### Total progress: [ {idx_iterations_total} / {num_iterations_total} ] iterations ###", log_indent))
 
 
 if __name__=="__main__":
