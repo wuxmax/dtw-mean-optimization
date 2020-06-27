@@ -22,6 +22,9 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
     eta = np.linspace(0.05, lr_min, n_steps)
 
     n_visited_samples = 0
+    
+    # optimal z
+    z_ = z
 
     for k in range(n_epochs):
         # shuffle data indices for new epoch
@@ -58,12 +61,16 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
         # f[0] is initial value, therefore +1 indexed
         f[k + 1] = frechet(z, X)
 
+        # check if current z is best
+        if np.amin(f) == f[k + 1]:
+            z_ = z
+
         # stop if converged
         f_diff = abs((f[k + 1] -  f[k]) / f[k])
         if f_diff < d_converged:
             break
 
-    return z, f
+    return z_, f
 
 
 # class SSG:
