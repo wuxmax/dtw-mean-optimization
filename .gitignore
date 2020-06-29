@@ -2,8 +2,10 @@
 .idea
 .vscode
 .DS_Store
+.ipynb_checkpoints/
 
 *.pyc
 *.pyo
 
-results
+results/*
+!results/results_vultr
