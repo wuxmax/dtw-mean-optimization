@@ -11,4 +11,4 @@ if [[ -n "$1" ]]; then
     CONFIG="$1"
 fi
 
-docker run -d --name=$USER-$(uuidgen) -it -v $(pwd)/datasets:/datasets -v $(pwd)/results:/results $IMAGE_NAME $CONFIG -d /datasets/UCRArchive_2018 -r /results
+docker run -d -it --rm --name=$USER-$(uuidgen) -v $(pwd)/datasets:/datasets -v $(pwd)/results:/results $IMAGE_NAME $CONFIG -d /datasets/UCRArchive_2018 -r /results
