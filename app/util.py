@@ -13,8 +13,6 @@ def load_dataset(data_base_dir, dataset):
             df = pd.read_csv(file_path, sep="\t", header=None)
             # exclude first column (class label)
             df.drop(columns=[0], inplace=True)
-
-            print(f"df shape: {df.shape}")
     
     # merge train and test data
     if len(dfs) > 1:
