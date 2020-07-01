@@ -30,7 +30,7 @@ def queue_listener(queue, c, timestamp, num_iterations_total):
         # if not, msg is latest result
         count_iterations_total += 1
         results_file = save_result(msg, c['RESULTS_DIR'], c['RESULT_FORMAT'], c['NAME'], timestamp)
-        logger.info(f"Total progress: [ {count_iterations_total} / {num_iterations_total} " \
+        logger.info(f"Total progress: [ {count_iterations_total} / {num_iterations_total}] " \
                     f"--> Results saved to [ {results_file} ]")
 
 
