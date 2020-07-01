@@ -1,8 +1,55 @@
 import os
 import glob
 import csv
+import json
 import numpy as np
 import pandas as pd
+import argparse
+import logging
+from collections import namedtuple
+
+logger = logging.getLogger(__name__)
+
+def load_experiment_config(general_config):
+    parser = argparse.ArgumentParser(description='Run optimizing experiment for DTW mean computation.')
+    parser.add_argument('config', metavar='CONFIG', nargs='?', default="default",
+        help='the configuration to use in config folder')
+    parser.add_argument('-r','--results', metavar='PATH', dest='results_path',
+                    help='path to store the results')
+    parser.add_argument('-d', '--datasets', metavar='PATH', dest='datasets_path',
+                    help='path of the datasets folders')
+
+    args = parser.parse_args()
+    config_name = args.config
+
+    config_filesuffix = ".json"    
+    if config_name.endswith(config_filesuffix):
+        config_filename = config_name
+        config_name = config_name[:-len(config_filesuffix)]
+    else:
+        config_filename = config_name + config_filesuffix
+
+    this_dir = os.path.dirname(os.path.realpath(__file__))
+    config_file = os.path.join(this_dir, 'config', config_filename)
+    
+    # try to load json config file into exp_config
+    try:
+        with open(config_file) as f:
+            exp_config = json.load(f)
+    except Exception as e:
+        logger.exception("Could not load config file: " + str(e))
+        exit(1)
+
+    exp_config['NAME'] = config_name
+    logger.info(f"Loaded configuration [ {config_name} ]")
+
+    # change general config if given
+    if args.results_path: general_config['RESULTS_DIR'] = args.results_path         
+    if args.datasets_path: general_config['DATA_BASE_DIR'] = args.datasets_path 
+
+    config = {**general_config, **exp_config}
+
+    return config
 
 def load_dataset(data_base_dir, dataset):
     dataset_dir = os.path.join(os.path.abspath(data_base_dir), dataset)
@@ -13,6 +60,7 @@ def load_dataset(data_base_dir, dataset):
             df = pd.read_csv(file_path, sep="\t", header=None)
             # exclude first column (class label)
             df.drop(columns=[0], inplace=True)
+            dfs.append(df)
     
     # merge train and test data
     if len(dfs) > 1:

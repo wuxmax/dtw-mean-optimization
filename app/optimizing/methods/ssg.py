@@ -13,7 +13,7 @@ from optimizing.dtw_mean import frechet
 import logging
 logger = logging.getLogger(__name__)
 
-def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
     N = X.shape[0]
     
     # learning rate schedule
@@ -52,9 +52,6 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
 
             # update rule
             z = z - lr * subgradient
-
-            # only for updating the terminal progess bar
-            progress_bar.update(batch_size)
 
             n_visited_samples += batch_size
         

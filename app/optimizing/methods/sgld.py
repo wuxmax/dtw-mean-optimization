@@ -7,14 +7,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
 
     X = np.array(X)
     N = X.shape[0]  # amount of samples
     d = X.shape[1]  # dimension of each sample
     m = X.shape[2]
 
-    logger.info(f"X: {X.shape}")
+    # logger.info(f"X: {X.shape}")
 
     xi = 5000  # downscaling bias of gaussian noise
     lr = 0.05 # learning rate
@@ -77,9 +77,6 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
             #     logger.info(f"failed first, y: {y}, kmax: {kmax}")
             #     x[t] = x[t-1]
             x[t] = y if np.less_equal(y, kmax).all() and np.greater_equal(y, kmin).all() and dtw(x[t-1],y) < D else x[t-1]
-
-            # only for updating the terminal progess bar
-            progress_bar.update(batch_size)
 
             n_visited_samples += batch_size
 

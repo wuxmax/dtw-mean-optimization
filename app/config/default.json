@@ -1,8 +1,9 @@
 {
     "DATASETS" : ["Coffee"],
     "OPTIMIZERS" : {
+        "sgld-120": {"method": "sgld", "n_coverage": 120, "batch_size": 1},
         "adam-100": {"method": "adam", "n_coverage": 100, "batch_size": 3},
         "ssg-100": {"method": "ssg", "n_coverage": 100, "batch_size": 3}
     },
-    "NUM_ITERATIONS" : 1
+    "NUM_ITERATIONS" : 3
 }

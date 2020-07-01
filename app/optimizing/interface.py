@@ -6,6 +6,7 @@
 # Original Author: David Schultz, DAI-Lab, TU Berlin, Germany, 2017
 ####################################################################
 
+import sys
 import importlib
 import logging
 import time
@@ -57,14 +58,14 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     f = np.full(n_epochs + 1, np.nan)
     f[0] = frechet(z, X)
 
-    # optimization
-    batch_overspill = 1 if n_coverage % batch_size > 0 else 0
-    with tqdm(total=n_coverage - n_coverage % batch_size + batch_overspill * batch_size) as pbar:
+    # progress bar
+    # batch_overspill = 1 if n_coverage % batch_size > 0 else 0
+    # with tqdm(total=n_coverage - n_coverage % batch_size + batch_overspill * batch_size, position=pbar_position, file=sys.stdout) as pbar:
         
-        # here the actual optimizing method is called
-        # run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
-        z, f = optimizing_method.run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar=pbar)
-    
+    # here the actual optimizing method is called
+    # run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
+    z, f = optimizing_method.run(X, z, f, batch_size, n_coverage, n_epochs, d_converged)
+
     # check if there are Nan values left in f
     last_epoch_idx = n_epochs - 1
     nan_epochs = np.where(np.isnan(f))[0]

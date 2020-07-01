@@ -3,15 +3,13 @@
 import os
 import time
 import logging
-import argparse
-import json
-from collections import namedtuple
+import multiprocessing as mp
 from datetime import datetime
-from util import *
+from util import load_experiment_config, load_dataset, save_result
 from optimizing import interface as opti
 
 logging.basicConfig(level=logging.INFO, format=' %(name)s :: %(levelname)s :: %(message)s')
-logger = logging.getLogger("dtw_mean_opt_main")
+logger = logging.getLogger("main")
 
 ### DEFAULT GENERAL  CONFIG ###
 general_config = {
@@ -20,92 +18,115 @@ general_config = {
     "RESULT_FORMAT" : ("dataset", "optimizer", "iteration", "variation", "runtime")
 }
 
-def load_experiment_config():
-    parser = argparse.ArgumentParser(description='Run optimizing experiment for DTW mean computation.')
-    parser.add_argument('config', metavar='CONFIG', nargs='?', default="default",
-        help='the configuration to use in config folder')
-    parser.add_argument('-r','--results', metavar='PATH', dest='results_path',
-                    help='path to store the results')
-    parser.add_argument('-d', '--datasets', metavar='PATH', dest='datasets_path',
-                    help='path of the datasets folders')
-
-    args = parser.parse_args()
-    config_name = args.config
-
-    config_filesuffix = ".json"    
-    if config_name.endswith(config_filesuffix):
-        config_filename = config_name
-        config_name = config_name[:-len(config_filesuffix)]
-    else:
-        config_filename = config_name + config_filesuffix
-
-    this_dir = os.path.dirname(os.path.realpath(__file__))
-    config_file = os.path.join(this_dir, 'config', config_filename)
+def queue_listener(queue, c, timestamp, num_iterations_total):
+    '''listens for messages on the queue, writes to file. '''
     
-    try:
-        with open(config_file) as f:
-            config_dict = json.load(f)
-    except Exception as e:
-        logger.exception("Could not load config file: " + str(e))
+    count_iterations_total = 0
+    while True:
+        msg = queue.get()
+        if msg == 'kill':
+            break
 
-    config_dict['NAME'] = config_name
-    logger.info(f"Loaded configuration [ {config_filename} ]")
-
-    # change general config if given
-    if args.results_path: general_config['RESULTS_DIR'] = args.results_path         
-    if args.datasets_path: general_config['DATA_BASE_DIR'] = args.datasets_path 
-
-    Config = namedtuple('Config', list(config_dict.keys()) + list(general_config.keys())) 
-    config = Config(**config_dict, **general_config)
-
-    return config
+        # if not, msg is latest result
+        count_iterations_total += 1
+        results_file = save_result(msg, c['RESULTS_DIR'], c['RESULT_FORMAT'], c['NAME'], timestamp)
+        logger.info(f"Total progress: [ {count_iterations_total} / {num_iterations_total} " \
+                    f"--> Results saved to [ {results_file} ]")
 
 
 def run_experiment(c):
-
     timestamp = datetime.now()
 
-    for dataset in c.DATASETS:
+    manager = mp.Manager()
+    queue = manager.Queue()    
+    pool = mp.Pool(mp.cpu_count() + 1)
 
-        logger.info(f"Starting experiment for dataset [ {dataset} ]")
+    num_iterations_total = len(c['DATASETS']) * len(c['OPTIMIZERS']) * c['NUM_ITERATIONS']
+    result_writer = pool.apply_async(queue_listener, (queue, c, timestamp, num_iterations_total))
 
-        data = load_dataset(c.DATA_BASE_DIR, dataset)
+    iterations = []
+    for dataset in c['DATASETS']:
+        for opt_name, opt_params in c['OPTIMIZERS'].items():
+            for iteration_idx in range(c['NUM_ITERATIONS']):
+                
+                pbar_position = len(iterations)
 
-        logger.info(f"Dataset size: [ {data.shape[0]} ]")
+                iteration = pool.apply_async(run_iteration, (c, dataset, iteration_idx, opt_name, opt_params, timestamp, queue))
+                iterations.append(iteration)
 
-        for opt_name, opt_params in c.OPTIMIZERS.items():
+    # collect results from the workers through the pool result queue
+    for iteration in iterations: 
+        iteration.get()
 
-            logger.info(f"Using optimizer [ {opt_name} ]")
+    # now we are done, kill the listener
+    queue.put('kill')
+    pool.close()
+    pool.join()
 
-            logger.info(f"Min. visited samples: [ {opt_params['n_coverage']} ]")
 
-            logger.info(f"Batch size: [ {opt_params['batch_size']} ]")
+def run_iteration(c, dataset, iteration_idx, opt_name, opt_params, timestamp, queue):
+    logger.info(f"Starting iteration [ {iteration_idx + 1} ] using optimizer [ {opt_name} ] on dataset [ {dataset} ]")
 
-            for iteration_idx in range(c.NUM_ITERATIONS):
+    data = load_dataset(c['DATA_BASE_DIR'], dataset)
 
-                logger.info(f"Running iteration [ {iteration_idx+1} / {c.NUM_ITERATIONS} ]")
+    runtime = None
+    variation = None
 
-                runtime = None
-                variation = None
+    #  optimize(X, method=None, n_epochs=None, batch_size=1, init_sequence=None, return_z=False)
+    runtime, variation = opti.optimize_timed(data, **opt_params)
 
-                #  optimize(X, method=None, n_epochs=None, batch_size=1, init_sequence=None, return_z=False)
-                runtime, variation = opti.optimize_timed(data, **opt_params)
+    iteration_id = "_".join([str(iteration_idx), str(hash(time.time()))])
+    result = (dataset, opt_name, iteration_id, variation, runtime)
 
-                iteration_id = str(iteration_idx) + "_" + str(hash(time.time()))
-                result = (dataset, opt_name, iteration_id, variation, runtime)
+    logger.info(f"Finished iteration [ {iteration_idx + 1} ] using optimizer [ {opt_name} ] on dataset [ {dataset} ] " \
+                f"in [ {runtime:.2f} ] seconds with [ {variation:.2f} ] variation")
 
-                results_file = save_result(result, c.RESULTS_DIR, c.RESULT_FORMAT, c.NAME, timestamp)
-
-                logger.info(f"Saved latest results to [ {results_file} ]")
-
-            logger.info(f"Finished experiment on [{dataset}] using [{opt_name}] for [{c.NUM_ITERATIONS}] iterations")
-            
-            num_iterations_total = len(c.DATASETS) * len(c.OPTIMIZERS) * c.NUM_ITERATIONS
-            idx_iterations_total = (c.DATASETS.index(dataset) * len(c.OPTIMIZERS) + list(c.OPTIMIZERS.keys()).index(opt_name)) \
-                * c.NUM_ITERATIONS + iteration_idx + 1
-            logger.info(f"### Total progress: [ {idx_iterations_total} / {num_iterations_total} ] iterations ###")
+    queue.put(result)
 
 
 if __name__=="__main__":
-    config = load_experiment_config()
+    config = load_experiment_config(general_config)
     run_experiment(config)
+
+
+# def run_experiment(c):
+
+#     timestamp = datetime.now()
+
+#     for dataset in c.DATASETS:
+
+#         logger.info(f"Starting experiment for dataset [ {dataset} ]")
+
+#         data = load_dataset(c.DATA_BASE_DIR, dataset)
+
+#         logger.info(f"Dataset size: [ {data.shape[0]} ]")
+
+#         for opt_name, opt_params in c.OPTIMIZERS.items():
+
+#             logger.info(f"Using optimizer [ {opt_name} ]")
+
+#             logger.info(f"Min. visited samples: [ {opt_params['n_coverage']} ]")
+
+#             logger.info(f"Batch size: [ {opt_params['batch_size']} ]")
+
+#             for iteration_idx in range(c.NUM_ITERATIONS):
+              
+                # runtime = None
+                # variation = None
+
+                # #  optimize(X, method=None, n_epochs=None, batch_size=1, init_sequence=None, return_z=False)
+                # runtime, variation = opti.optimize_timed(data, **opt_params)
+
+                # iteration_id = str(iteration_idx) + "_" + str(hash(time.time()))
+                # result = (dataset, opt_name, iteration_id, variation, runtime)
+
+                # results_file = save_result(result, c.RESULTS_DIR, c.RESULT_FORMAT, c.NAME, timestamp)
+
+                # logger.info(f"Saved latest results to [ {results_file} ]")
+
+#             logger.info(f"Finished experiment on [{dataset}] using [{opt_name}] for [{c.NUM_ITERATIONS}] iterations")
+            
+#             num_iterations_total = len(c.DATASETS) * len(c.OPTIMIZERS) * c.NUM_ITERATIONS
+#             idx_iterations_total = (c.DATASETS.index(dataset) * len(c.OPTIMIZERS) + list(c.OPTIMIZERS.keys()).index(opt_name)) \
+#                 * c.NUM_ITERATIONS + iteration_idx + 1
+#             logger.info(f"### Total progress: [ {idx_iterations_total} / {num_iterations_total} ] iterations ###")

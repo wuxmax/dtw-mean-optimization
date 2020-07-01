@@ -23,7 +23,7 @@ return θt (Resulting parameters)
 """
 
 # run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
-def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
     N = X.shape[0]
     d = z.shape
     n_steps = int(np.ceil(n_coverage / batch_size))
@@ -68,9 +68,6 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
             
             # actual update step
             z = z - alpha * m_ / (np.sqrt(v_) + eps_stable)
-
-            # only for updating the terminal progess bar
-            progress_bar.update(batch_size)
 
             n_visited_samples += batch_size
         
