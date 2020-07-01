@@ -1,7 +1,7 @@
 {
     "DATASETS" : ["Coffee"],
     "OPTIMIZERS" : {
-        "sgld-120": {"method": "sgld", "n_coverage": 120, "batch_size": 1}
+        "sgld-120": {"method": "sgld", "n_coverage": 120, "batch_size": 10}
     },
     "NUM_ITERATIONS" : 1
 }
