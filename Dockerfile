@@ -8,6 +8,7 @@ RUN conda install -y --file app/requirements.txt
 COPY ./app /app
 
 # just to show cpu usage
-RUN apt install sysstat
+RUN apt-get update
+RUN apt-get install sysstat
 
 ENTRYPOINT [ "python3", "app/main.py" ]
