@@ -90,8 +90,8 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar):
     f_array = np.array([frechet(val, X) for val in x])
     best_x = np.argmin(f_array)
 
-    # TODO: why?
+    # flatten x[best_x] if it is a single element list
     result = x[best_x].flatten() if x.shape[2] == 1 else x[best_x]
 
     # return -np.sort(-f_array), result
-    return f_array, result
+    return result, f_array
