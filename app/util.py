@@ -10,10 +10,15 @@ def load_dataset(data_base_dir, dataset):
     for file in os.listdir(dataset_dir):
         if file.endswith(".tsv"):
             file_path = os.path.join(dataset_dir, file)
-            dfs.append(pd.read_csv(file_path, sep="\t", header=None))
+            df = pd.read_csv(file_path, sep="\t", header=None)
+            # exclude first column (class label)
+            df.drop(columns=[0], inplace=True)
+
+            print(f"df shape: {df.shape}")
     
     # merge train and test data
-    df =  pd.concat(dfs)
+    if len(dfs) > 1:
+        df =  pd.concat(dfs)
     
     return df_to_np(df)
 

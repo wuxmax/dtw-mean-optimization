@@ -52,7 +52,8 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
 
     elif init_sequence <= 0:
         z = medoid_sequence(X)
-    
+
+    # vector to store frechet variations
     f = np.full(n_epochs + 1, np.nan)
     f[0] = frechet(z, X)
 
@@ -75,10 +76,10 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     f_min = np.min(f)
 
     if return_z:
-        return f[last_epoch_idx], z
+        return f_min, z
 
     else:
-        return f[last_epoch_idx]
+        return f_min
 
 def get_subgradient(X, z, data_idx, batch_size, perm):
     subgradients = np.zeros((batch_size,) + z.shape)
