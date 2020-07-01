@@ -1,18 +1,10 @@
-# FROM nvidia/cuda:10.2-runtime-ubuntu18.04
-FROM tiangolo/python-machine-learning:cuda9.1-python3.7
-
-# RUN mkdir /results
-# RUN chown -R /results
+FROM tiangolo/python-machine-learning:python3.7
 
 RUN mkdir /app
-WORKDIR /app
 
 COPY ./app/requirements.txt /app
-RUN conda install -y --file requirements.txt
+RUN conda install -y --file app/requirements.txt
 
 COPY ./app /app
 
-# ENTRYPOINT [ "bash" ]
-# CMD ["scripts/run_experiment.sh"]
-
-ENTRYPOINT [ "python3", "main.py" ]
+ENTRYPOINT [ "python3", "app/main.py" ]
