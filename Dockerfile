@@ -9,6 +9,6 @@ COPY ./app /app
 
 # just to show cpu usage
 RUN apt-get update
-RUN apt-get install sysstat
+RUN apt-get install -y sysstat
 
 ENTRYPOINT [ "python3", "app/main.py" ]
