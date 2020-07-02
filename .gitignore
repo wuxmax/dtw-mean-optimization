@@ -8,4 +8,4 @@
 *.pyo
 
 results/*
-!results/results_vultr
+!results/results_paper
