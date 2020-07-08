@@ -7,6 +7,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def get_xi_from_dataset(X, kmax, kmin):
+    print("min X:")
+    print(np.min(X.var(axis=0)))
+    print("min k_max:")
+    print(np.min(kmax))
+    print("min difference in k")
+    print(np.min(kmax-kmin))
+
 def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
 
     X = np.array(X)
@@ -14,11 +22,6 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
     d = X.shape[1]  # dimension of each sample
     m = X.shape[2]
 
-    # logger.info(f"X: {X.shape}")
-
-    xi = 5000  # downscaling bias of gaussian noise
-    lr = 0.05 # learning rate
-    D = 4*sqrt((2*lr*d)/xi)  # maximum distance to next update
     n_steps = int(np.ceil(n_coverage/batch_size))  # iterations to go through
 
     n_visited_samples = 0
@@ -26,6 +29,15 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
 
     kmin = np.amin(X, axis=0)  # lower limit of solution
     kmax = np.amax(X, axis=0)  # higher limit of solution
+
+    xi = 8500 / np.abs(np.min(kmax)) # downscaling bias of gaussian noise
+    lr = 0.05 # learning rate
+    D = 8*sqrt((2*lr*d)/(xi/100))  # maximum distance to next update
+
+    print(f"Xi: {xi}")
+
+    get_xi_from_dataset(X, kmax, kmin)
+
 
     # initialize solution array with first value being random in solution range
     x = np.zeros((n_steps+1, d, m))
@@ -60,23 +72,23 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
             y = x[t-1] - lr * g + sqrt((2*lr)/xi) * w
 
             # update
-            # if np.less_equal(y, kmax).all():
-            #     logger.info(f"first if")
-            #     if np.greater_equal(y, kmin).all():
-            #         logger.info(f"second if")
-            #         if dtw(x[t-1],y) < D:
-            #             logger.info(f"third if")
-            #             x[t] = y
-            #         else:
-            #             logger.info(f"failed third, distance: {dtw(x[t-1],y)} > {D}")
-            #             x[t] = x[t-1]
-            #     else:
-            #         logger.info(f"failed second, y: {y}, kmin: {kmin}")
-            #         x[t] = x[t-1]
-            # else:
-            #     logger.info(f"failed first, y: {y}, kmax: {kmax}")
-            #     x[t] = x[t-1]
-            x[t] = y if np.less_equal(y, kmax).all() and np.greater_equal(y, kmin).all() and dtw(x[t-1],y) < D else x[t-1]
+            if np.less_equal(y, kmax).all():
+                logger.info(f"first if")
+                if np.greater_equal(y, kmin).all():
+                    logger.info(f"second if")
+                    if dtw(x[t-1],y) < D:
+                        logger.info(f"third if")
+                        x[t] = y
+                    else:
+                        logger.info(f"failed third, distance: {dtw(x[t-1],y)} > {D}")
+                        x[t] = x[t-1]
+                else:
+                    logger.info(f"failed second")
+                    x[t] = x[t-1]
+            else:
+                logger.info(f"failed first")
+                x[t] = x[t-1]
+            # x[t] = y if np.less_equal(y, kmax).all() and np.greater_equal(y, kmin).all() and dtw(x[t-1],y) < D else x[t-1]
 
             n_visited_samples += batch_size
 
