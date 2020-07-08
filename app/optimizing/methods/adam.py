@@ -22,8 +22,7 @@ end while
 return θt (Resulting parameters)
 """
 
-# run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
-def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng):
     N = X.shape[0]
     d = z.shape
     n_steps = int(np.ceil(n_coverage / batch_size))
@@ -41,7 +40,7 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
     
     for k in range(n_epochs):
         # shuffle data indices for new epoch
-        perm = np.random.permutation(N)
+        perm = rng.permutation(N)
 
         for i in range(0, N, batch_size):
                         

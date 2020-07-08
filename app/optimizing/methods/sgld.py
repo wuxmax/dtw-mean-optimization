@@ -15,7 +15,7 @@ def get_xi_from_dataset(X, kmax, kmin):
     print("min difference in k")
     print(np.min(kmax-kmin))
 
-def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng):
 
     X = np.array(X)
     N = X.shape[0]  # amount of samples
@@ -34,19 +34,17 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
     lr = 0.05 # learning rate
     D = 8*sqrt((2*lr*d)/(xi/100))  # maximum distance to next update
 
-    print(f"Xi: {xi}")
-
-    get_xi_from_dataset(X, kmax, kmin)
-
+    # print(f"Xi: {xi}")
+    # get_xi_from_dataset(X, kmax, kmin)
 
     # initialize solution array with first value being random in solution range
     x = np.zeros((n_steps+1, d, m))
-    x[0] = np.array([np.random.uniform(low=kmin[i], high=kmax[i]) for i in range(d)])
+    x[0] = np.array([rng.uniform(low=kmin[i], high=kmax[i]) for i in range(d)])
 
 
     for k in range(n_epochs):
         # shuffle data indices for new epoch
-        perm = np.random.permutation(N)
+        perm = rng.permutation(N)
 
         for i in range(0, N, batch_size):
 
@@ -63,7 +61,7 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
             t += 1
 
             # calculate gaussian noise
-            w = np.array([[np.random.normal(0, 1)] for i in range(d)])
+            w = np.array([[rng.normal(0, 1)] for i in range(d)])
 
             # calculate subgradient for computation of update candidate
             g = get_subgradient(X, x[t-1], i, batch_size, perm)
@@ -73,20 +71,20 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
 
             # update
             if np.less_equal(y, kmax).all():
-                logger.info(f"first if")
+                # logger.info(f"first if")
                 if np.greater_equal(y, kmin).all():
-                    logger.info(f"second if")
+                    # logger.info(f"second if")
                     if dtw(x[t-1],y) < D:
-                        logger.info(f"third if")
+                        # logger.info(f"third if")
                         x[t] = y
                     else:
-                        logger.info(f"failed third, distance: {dtw(x[t-1],y)} > {D}")
+                        # logger.info(f"failed third, distance: {dtw(x[t-1],y)} > {D}")
                         x[t] = x[t-1]
                 else:
-                    logger.info(f"failed second")
+                    # logger.info(f"failed second")
                     x[t] = x[t-1]
             else:
-                logger.info(f"failed first")
+                # logger.info(f"failed first")
                 x[t] = x[t-1]
             # x[t] = y if np.less_equal(y, kmax).all() and np.greater_equal(y, kmin).all() and dtw(x[t-1],y) < D else x[t-1]
 

@@ -11,7 +11,7 @@ import importlib
 import logging
 import time
 import numpy as np
-from tqdm import tqdm
+# from tqdm import tqdm
 from .dtw_mean import *
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def optimize_timed(*args, **kwargs):
     t = time2 - time1 
     return t, ret
 
-def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_sequence=None, return_z=False):
+def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_sequence=None, return_z=False, random_stream=None):
 
     # X is a 3-dim matrix consisting of possibly multivariate time series.
     #   dim 1 runs over the sample time series
@@ -35,6 +35,12 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
         optimizing_method = importlib.import_module('.methods.' + method, package='optimizing')
     except Exception as e:
         logger.exception('Could not load optimization method: ' + str(e))
+
+    # set random number generator (stream)
+    if random_stream is None:
+        rng = np.random.default_rng()
+    else:
+        rng = random_stream
     
     N = X.shape[0]  # number of samples
 
@@ -46,7 +52,7 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     
     # initialize mean z
     if init_sequence is None:
-        z = X[np.random.randint(N)]
+        z = X[rng.integers(N)]
 
     elif init_sequence > 0:
         z = X[int(init_sequence)]
@@ -63,8 +69,7 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     # with tqdm(total=n_coverage - n_coverage % batch_size + batch_overspill * batch_size, position=pbar_position, file=sys.stdout) as pbar:
         
     # here the actual optimizing method is called
-    # run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, progress_bar)
-    z, f = optimizing_method.run(X, z, f, batch_size, n_coverage, n_epochs, d_converged)
+    z, f = optimizing_method.run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng)
 
     # check if there are Nan values left in f
     last_epoch_idx = n_epochs - 1
@@ -74,7 +79,7 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
         logger.info(f"Stopped early because of convergence: [ {last_epoch_idx} / {n_epochs} ] epochs computed")
 
     # epoch with minimum frechet variation is best result
-    f_min = np.min(f)
+    f_min = np.min(f[:last_epoch_idx + 1])
 
     if return_z:
         return f_min, z

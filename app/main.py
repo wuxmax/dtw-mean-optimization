@@ -5,6 +5,7 @@ import time
 import logging
 import multiprocessing as mp
 from datetime import datetime
+from numpy.random import SeedSequence, default_rng
 from util import load_experiment_config, load_dataset, save_result
 from optimizing import interface as opti
 
@@ -17,6 +18,39 @@ general_config = {
     "DATA_BASE_DIR" : "./datasets/UCRArchive_2018/",
     "RESULT_FORMAT" : ("dataset", "optimizer", "iteration", "variation", "runtime")
 }
+
+def run_experiment(c):
+    timestamp = datetime.now()
+
+    manager = mp.Manager()
+    queue = manager.Queue()    
+    pool = mp.Pool(mp.cpu_count() + 1)
+
+    num_iterations_total = len(c['DATASETS']) * len(c['OPTIMIZERS']) * c['NUM_ITERATIONS']
+    result_writer = pool.apply_async(queue_listener, (queue, c, timestamp, num_iterations_total))
+
+    # create independent random generator objects (streams) for every iteration
+    seed_sequence = SeedSequence(12345)
+    child_seeds = seed_sequence.spawn(num_iterations_total)
+    random_streams = iter([default_rng(s) for s in child_seeds])
+
+    iterations = []
+    for dataset in c['DATASETS']:
+        for opt_name, opt_params in c['OPTIMIZERS'].items():
+            for iteration_idx in range(c['NUM_ITERATIONS']):
+                rng = next(random_streams)                
+                iteration = pool.apply_async(run_iteration, (c, dataset, iteration_idx, opt_name, opt_params, timestamp, queue, rng))
+                iterations.append(iteration)
+
+    # collect results from the workers through the pool result queue
+    for iteration in iterations: 
+        iteration.get()
+
+    # now we are done, kill the listener
+    queue.put('kill')
+    pool.close()
+    pool.join()
+
 
 def queue_listener(queue, c, timestamp, num_iterations_total):
     '''listens for messages on the queue, writes to file. '''
@@ -34,37 +68,7 @@ def queue_listener(queue, c, timestamp, num_iterations_total):
                     f"--> Results saved to [ {results_file} ]")
 
 
-def run_experiment(c):
-    timestamp = datetime.now()
-
-    manager = mp.Manager()
-    queue = manager.Queue()    
-    pool = mp.Pool(mp.cpu_count() + 1)
-
-    num_iterations_total = len(c['DATASETS']) * len(c['OPTIMIZERS']) * c['NUM_ITERATIONS']
-    result_writer = pool.apply_async(queue_listener, (queue, c, timestamp, num_iterations_total))
-
-    iterations = []
-    for dataset in c['DATASETS']:
-        for opt_name, opt_params in c['OPTIMIZERS'].items():
-            for iteration_idx in range(c['NUM_ITERATIONS']):
-                
-                pbar_position = len(iterations)
-
-                iteration = pool.apply_async(run_iteration, (c, dataset, iteration_idx, opt_name, opt_params, timestamp, queue))
-                iterations.append(iteration)
-
-    # collect results from the workers through the pool result queue
-    for iteration in iterations: 
-        iteration.get()
-
-    # now we are done, kill the listener
-    queue.put('kill')
-    pool.close()
-    pool.join()
-
-
-def run_iteration(c, dataset, iteration_idx, opt_name, opt_params, timestamp, queue):
+def run_iteration(c, dataset, iteration_idx, opt_name, opt_params, timestamp, queue, rng):
     logger.info(f"Starting iteration [ {iteration_idx + 1} ] using optimizer [ {opt_name} ] on dataset [ {dataset} ]")
 
     data = load_dataset(c['DATA_BASE_DIR'], dataset)
@@ -72,8 +76,7 @@ def run_iteration(c, dataset, iteration_idx, opt_name, opt_params, timestamp, qu
     runtime = None
     variation = None
 
-    #  optimize(X, method=None, n_epochs=None, batch_size=1, init_sequence=None, return_z=False)
-    runtime, variation = opti.optimize_timed(data, **opt_params)
+    runtime, variation = opti.optimize_timed(data, **opt_params, random_stream=rng)
 
     iteration_id = "_".join([str(iteration_idx), str(hash(time.time()))])
     result = (dataset, opt_name, iteration_id, variation, runtime)

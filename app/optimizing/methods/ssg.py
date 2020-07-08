@@ -13,7 +13,7 @@ from optimizing.dtw_mean import frechet
 import logging
 logger = logging.getLogger(__name__)
 
-def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
+def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng):
     N = X.shape[0]
     
     # learning rate schedule
@@ -28,7 +28,7 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged):
 
     for k in range(n_epochs):
         # shuffle data indices for new epoch
-        perm = np.random.permutation(N)
+        perm = rng.permutation(N)
 
         for i in range(0, N, batch_size):
             
