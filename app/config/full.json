@@ -1,8 +1,12 @@
 {
-    "DATASETS" : ["FiftyWords", "Adiac", "Beef", "CBF", "ChlorineConcentration", "Coffee", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "FaceFour", "FISH", "Gun_Point", "Lighting2", "Lighting7", "OliveOil", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "SyntheticControl", "Trace", "TwoPatterns", "Wafer", "Yoga"],
+    "DATASETS" : ["FiftyWords", "Adiac", "Beef", "CBF", "ChlorineConcentration", "Coffee", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "FaceFour", "Fish", "GunPoint", "Lightning2", "Lightning7", "OliveOil", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "SyntheticControl", "Trace", "TwoPatterns", "Wafer", "Yoga"],
     "OPTIMIZERS" : {
-        "adam-1000": {"method": "adam", "n_coverage": 1000, "batch_size": 1},
-        "ssg-1000": {"method": "ssg", "n_coverage": 1000, "batch_size": 1}
+        "ssg-1000-1": {"method": "ssg", "n_coverage": 1000, "batch_size": 1},
+        "adam-1000-1": {"method": "adam", "n_coverage": 1000, "batch_size": 1},
+        "ssg-1000-10": {"method": "ssg", "n_coverage": 1000, "batch_size": 10},
+        "adam-1000-10": {"method": "adam", "n_coverage": 1000, "batch_size": 10},
+        "sgld-1000-1": {"method": "sgld", "n_coverage": 1000, "batch_size": 1},
+        "sgld-1000-10": {"method": "sgld", "n_coverage": 1000, "batch_size": 10}
     },
     "NUM_ITERATIONS" : 30
 }

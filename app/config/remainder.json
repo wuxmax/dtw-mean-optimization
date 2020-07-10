@@ -1,5 +1,5 @@
 {
-    "DATASETS" : ["Coffee", "FaceFour", "FISH", "Gun_Point", "Lighting2", "Lighting7", "OliveOil", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "SyntheticControl", "Trace", "TwoPatterns", "Wafer", "Yoga"],
+    "DATASETS" : ["FiftyWords", "Adiac", "Beef", "CBF", "ChlorineConcentration", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "Fish", "GunPoint", "Lightning2", "Lightning7", "OSULeaf", "PhalangesOutlinesCorrect", "SwedishLeaf", "SyntheticControl", "Trace", "TwoPatterns", "Wafer", "Yoga"],
     "OPTIMIZERS" : {
         "ssg-1000-1": {"method": "ssg", "n_coverage": 1000, "batch_size": 1},
         "adam-1000-1": {"method": "adam", "n_coverage": 1000, "batch_size": 1},
