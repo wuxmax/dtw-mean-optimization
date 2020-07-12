@@ -1,0 +1,10 @@
+{
+    "DATASETS" : ["Adiac", "Beef", "CBF", "ChlorineConcentration", "Coffee", "ECG200", "ECG5000", "ElectricDevices", "FaceAll", "FaceFour", "FiftyWords", "Fish", "GunPoint", "Lightning2", "Lightning7", "OSULeaf", "OliveOil", "PhalangesOutlinesCorrect", "SwedishLeaf", "SyntheticControl", "Trace", "TwoPatterns", "Wafer", "Yoga"],
+    "OPTIMIZERS" : {
+        "ssg-2000-5": {"method": "ssg", "n_coverage": 2000, "batch_size": 5},
+        "adam-2000-5": {"method": "adam", "n_coverage": 2000, "batch_size": 5},
+        "sgld-2000-5": {"method": "sgld", "n_coverage": 2000, "batch_size": 5}
+    },
+    "NUM_ITERATIONS" : 30
+}
+
