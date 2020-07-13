@@ -87,7 +87,7 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng):
     best_x = np.argmin(f_array)
 
     # flatten x[best_x] if it is a single element list
-    result = x[best_x].flatten() if x.shape[2] == 1 else x[best_x]
+    result = x[best_x].flatten() if m == 1 else x[best_x]
 
     # return -np.sort(-f_array), result
     return result, f_array
