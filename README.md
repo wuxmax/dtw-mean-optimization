@@ -4,6 +4,14 @@ The program contained in this repository realizes the experiments described in t
 
 Every operation described here is assumed to be executed from the root directory of this repository (the directory of this file).
 
+## Requirements
+This programm requires Python 3.4, while Python 3.6+ is recommended. To install the package requirements, just run:
+
+```
+pip install -r app/requirements.txt
+```
+As alway, it is advisable to create separated virtual environment. If you want to run this program in a Docker container, this step can be skipped (see __Deploy on the daigpu3 VM__ for that).
+
 ## Run an experiment
 To run an experiment, one simply has to execute the `main.py` in the `app` folder like this:
 
@@ -46,6 +54,7 @@ To configure an experiment, a respective configuration file has to be placed in 
 For further explanation of the parameters, please refer to the paper.
 
 To run the configuration in a file named `example.json`, the command `app/main.py example` or `app/main.py example.json` have to be executed.
+
 
 ## Deploy on the daigpu3 VM
 To run your experiments on the `daigpu3` VM (or any other system using Docker), follow these steps.
