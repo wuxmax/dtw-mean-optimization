@@ -1,4 +1,4 @@
-# Comparison of Gradient-based Optimization Methods for theTime Series Sample Mean Problem in DTW Space
+# Comparison of Gradient-based Optimization Methods for the Time Series Sample Mean Problem in DTW Space
 
 The program contained in this repository realizes the experiments described in the [respective paper](docs/paper.pdf).
 
@@ -58,11 +58,36 @@ To run your experiments on the `daigpu3` VM (or any other system using Docker), 
 __NOTE__: This implementation highly profits from multiprocessing. So it advised to run it on a machine with a great number of processor cores (the `daigpu3` machine has 88 (v)cores).
 
 
-
-
 ## Result interpretation
 The results are saved in the following format:
 ```
 dataset, optimizer, iteration_id, variation, runtime
-````
+```
 For an idea how to further analyze these results, you may refer to the [respective Jupyter Notebook](notebooks/explore_results.ipynb).
+
+
+## Extendability
+This experimental setup can be easily extended to use other optimization methods, by placing the file containing the python code for the new optimization method in the folder: `optimization/methods`
+
+The name of the python module has to match the `"OPTIMIZER": {"method": example_method, ... }` field in the config files used to run experiments with it.
+
+The module hast to implement a `run` function with the following signature:
+```
+run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng)
+```
+This function has to return the optimal solution and a vector of Fréchet variations in the following forms:
+```
+# z_ is optimal solution
+# f is vector of Fréchet variations
+
+return z_, f
+```
+
+## Contact details
+If you have further inquiries, please contact the authors via:
+
+max.reinhard@campus.tu-berlin.de or  
+f.maschhur@campus.tu-berlin.de
+
+
+
