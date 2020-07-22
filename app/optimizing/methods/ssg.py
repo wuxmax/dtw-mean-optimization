@@ -1,3 +1,5 @@
+# Based on:
+#
 # Stoachstic Subgradient (SSG) Method for Averaging Time Series
 # under Dynamic Time Warping (DTW).
 #
@@ -68,19 +70,3 @@ def run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng):
             break
 
     return z_, f
-
-
-# class SSG:
-#     def __init__(self, N):
-#         self.eta = np.linspace(0.1, 0.005, N)
-
-
-#     def update(self, z, subgradient, update_idx, N):
-#         eta = self.eta
-
-#         if update_idx <= eta.shape[0]:
-#             lr = eta[update_idx]
-#         else:
-#             lr = eta[-1]
-
-#         return z - lr * subgradient

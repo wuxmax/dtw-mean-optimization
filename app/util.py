@@ -88,15 +88,3 @@ def save_result(result, results_dir, result_format, exp_name, exp_timestamp):
         csv_out.writerow(result)
 
     return results_file
-
-
-# def get_latest_results_file(result_dir):    
-#     list_of_files = glob.glob(result_dir + '/*.csv') 
-#     latest_file = None
-#     if list_of_files:
-#         latest_file = max(list_of_files, key=os.path.getctime)
-#     return latest_file
-
-
-# def create_result_df(data_tuple, df_columns):
-#     return pd.DataFrame.from_records([data_tuple], columns=df_columns)

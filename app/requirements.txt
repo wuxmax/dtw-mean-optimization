@@ -1,4 +1,3 @@
-tqdm
 scipy
 numpy
 pandas

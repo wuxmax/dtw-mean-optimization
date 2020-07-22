@@ -1,3 +1,5 @@
+# Based on:
+#
 # Stoachstic Subgradient (SSG) Method for Averaging Time Series
 # under Dynamic Time Warping (DTW).
 #
@@ -11,7 +13,6 @@ import importlib
 import logging
 import time
 import numpy as np
-# from tqdm import tqdm
 from .dtw_mean import *
 
 logger = logging.getLogger(__name__)
@@ -63,10 +64,6 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
     # vector to store frechet variations
     f = np.full(n_epochs + 1, np.nan)
     f[0] = frechet(z, X)
-
-    # progress bar
-    # batch_overspill = 1 if n_coverage % batch_size > 0 else 0
-    # with tqdm(total=n_coverage - n_coverage % batch_size + batch_overspill * batch_size, position=pbar_position, file=sys.stdout) as pbar:
         
     # here the actual optimizing method is called
     z, f = optimizing_method.run(X, z, f, batch_size, n_coverage, n_epochs, d_converged, rng)
@@ -88,6 +85,10 @@ def optimize(X, method, n_coverage=None, batch_size=1, d_converged=0.0001, init_
         return f_min
 
 def get_subgradient(X, z, data_idx, batch_size, perm):
+    ''' 
+    Get subgradients for in relation to current solution z,
+    incorporation batch_size data points from the current permutation.
+    '''
     subgradients = np.zeros((batch_size,) + z.shape)
 
     for j in range(batch_size):    
@@ -100,7 +101,4 @@ def get_subgradient(X, z, data_idx, batch_size, perm):
 
     subgradient = np.mean(subgradients, axis=0)
 
-    # logger.info(f"Shape of z: {z.shape} | Shape of subgradient: {subgradient.shape} | Shape of subgradientS: {subgradients.shape}")
-    # logger.info(f"Subgradient values:\n{subgradient}")
-    
     return subgradient
