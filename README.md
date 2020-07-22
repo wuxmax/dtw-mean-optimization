@@ -47,7 +47,7 @@ For further explanation of the parameters, please refer to the paper.
 
 To run the configuration in a file named `example.json`, the command `app/main.py example` or `app/main.py example.json` have to be executed.
 
-## Deploy experiments on the daigpu3 VM
+## Deploy on the daigpu3 VM
 To run your experiments on the `daigpu3` VM (or any other system using Docker), follow these steps.
 
 1. Log into the VM and clone or copy the repository.
@@ -67,9 +67,17 @@ For an idea how to further analyze these results, you may refer to the [respecti
 
 
 ## Extendability
-This experimental setup can be easily extended to use other optimization methods, by placing the file containing the python code for the new optimization method in the folder: `optimization/methods`
+This experimental setup can be easily extended to use other optimization methods, by placing the file containing the python code for the new optimization method in the folder: `app/optimization/methods`
 
-The name of the python module has to match the `"OPTIMIZER": {"method": example_method, ... }` field in the config files used to run experiments with it.
+The name of the python module has to match the respective field in the config files used to run experiments with it. For example
+
+```
+...
+"OPTIMIZER": {"method": "example_method", ... }
+...
+```
+would require a file: `app/optimization/methods/example_method.py`
+
 
 The module hast to implement a `run` function with the following signature:
 ```
